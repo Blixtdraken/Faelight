@@ -1,4 +1,4 @@
-use std::{thread, time::Duration};
+use glfw::{Key, WindowEvent};
 
 
 
@@ -10,16 +10,22 @@ fn main() {
     glfw.create_window(1280, 720, "Faelight", glfw::WindowMode::Windowed)
     .expect("Window creation failed.");
     window.set_key_polling(true);
-
     while !window.should_close() {
         glfw.poll_events();
         
         for(_, event) in glfw::flush_messages(&window_events){
             
-            match event {
-                _ =>()
-            }
+           
 
         }
     }
+}
+
+
+fn handle_window_event(event: WindowEvent) {
+     match event {
+                //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
+                WindowEvent::Key(key, _, action, _) => {println!("Key: {}", key.get_name().unwrap())}
+                _ =>()
+            }
 }
