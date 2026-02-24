@@ -17,7 +17,7 @@ fn main() {
         for(_, event) in glfw::flush_messages(&window_events){
             
             match event {
-                match
+                _ =>()
             }
 
         }
