@@ -50,13 +50,13 @@ fn main() {
         }
 
         //OpenGL
-        let elapsed = start_time.elapsed().as_secs_f32();
+        let elapsed = start_time.elapsed().as_secs_f32() * 0.5;
         unsafe {
-            //gl::ClearColor(
-            //    (PI*0.5+elapsed.sin()+1.0)*0.5, 
-            //    (PI+elapsed.sin()+1.0)*0.5, 
-            //    (elapsed.sin()+1.0)*0.5
-            //, 1.0);
+            gl::ClearColor(
+                (((elapsed - 0.000) * PI).sin()+1.0)*0.5, 
+                (((elapsed - 0.666) * PI).sin()+1.0)*0.5, 
+                (((elapsed + 0.666) * PI).sin()+1.0)*0.5,
+                1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
         }
 
