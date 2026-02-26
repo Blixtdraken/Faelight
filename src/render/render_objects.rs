@@ -2,6 +2,8 @@ use std::{ffi::{CStr, CString}, ptr::{null, null_mut}};
 
 use gl::{UseProgram, types::{GLchar, GLenum, GLint, GLuint}};
 
+use crate::math::vector2::Vector2f;
+
 pub struct Shader{
     id: GLuint
 }
@@ -128,16 +130,16 @@ impl Vbo {
         Vbo{ id }
     }
 
-    pub fn set(&self, data: &Vec<f32>) {
+    pub fn set(&self, data: &Vec<Vector2f>) {
         self.bind();
         self.data(data);
     }
 
-    pub fn data(&self, verts: &Vec<f32>){
+    pub fn data(&self, verts: &Vec<Vector2f>){
         unsafe{ 
             gl::BufferData(
                 gl::ARRAY_BUFFER, 
-                (verts.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr, 
+                (verts.len() * std::mem::size_of::<Vector2f>()) as gl::types::GLsizeiptr, 
                 verts.as_ptr() as *const gl::types::GLvoid,
                 gl::STATIC_DRAW);
         }

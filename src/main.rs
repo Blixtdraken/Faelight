@@ -1,13 +1,13 @@
 use std::{f32::consts::PI, time::Instant};
 
 use gl::DrawElements;
-use sdl3::{event::Event, keyboard::Keycode, sys::keycode};
+use sdl3::{event::{Event, WindowEvent}, keyboard::Keycode, sys::keycode};
 
-use crate::{math::vector2::Vector2, render::render_objects::{Ibo, Vao, Vbo, create_program}};
+use crate::{input::keyboard::KeyboardState, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
 
 mod math;
 mod render;
-
+mod input;
 
 
 fn main() {
@@ -17,11 +17,12 @@ fn main() {
 
     let video_system = sdl.video().unwrap();
     
-    let window_size: Vector2<u32> = Vector2::new(1280, 720);
+    let window_size = Vector2u::new(1280, 720);
 
-    let window = video_system.window("Faelight", window_size.x, window_size.y)
-        .opengl()
+    let window = video_system
+        .window("Faelight", window_size.x, window_size.y)
         .resizable()
+        .opengl()
         .build()
         .unwrap();
 
@@ -36,14 +37,23 @@ fn main() {
     let program = create_program().unwrap();
     program.set();
 
-    let mut verts: Vec<f32> = vec![
-        -0.5, -0.5,
-        0.0, -0.5,
-        0.5, 0.5
+    //let mut verts: Vec<f32> = vec![
+    //    -0.5, -0.5,
+    //    0.5, -0.5,
+    //    0.5, 0.5,
+    //    -0.5, 0.5
+    //];
+
+    let mut verts: Vec<Vector2f> = vec![
+       Vector2f::new( -0.5, -0.5),
+       Vector2f::new( 0.5,  -0.5),
+       Vector2f::new( 0.5,   0.5),
+       Vector2f::new( -0.5,  0.5)
     ];
 
     let indices: Vec<u32> = vec![
-        0, 1, 2
+        0, 1, 2,
+        2, 3, 0
     ];
 
     let vbo = Vbo::generate();
@@ -61,37 +71,36 @@ fn main() {
 
     let mut event_pump = sdl.event_pump().unwrap();
 
-    let start_time = Instant::now();
+    let mut delta_timer = Instant::now();
+
+    let mut start_time = Instant::now();
+
+    let mut input = KeyboardState::new();
+
 
     'main: loop{
-        
+        let delta_time = delta_timer.elapsed().as_secs_f32();
+        println!("Deltatime: {delta_time}");
+        delta_timer = Instant::now();
         for event in event_pump.poll_iter() {
             match event {
                 //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
-                Event::KeyDown { timestamp, window_id, keycode, scancode, keymod, repeat, which, raw } =>{
-                    let key= 
-                    match keycode {
-                        Some(key) => key,
-                        None => continue    
-                    };
-                    println!("Key pressed: {key}");
-                    match key {
-                        Keycode::Left => verts[4]  -= 0.01,
-                        Keycode::Right => verts[4] += 0.01,
-                        Keycode::Down => verts[5]  -= 0.01,
-                        Keycode::Up => verts[5]    += 0.01,
-                        _ => continue
+                Event::KeyDown { keycode, .. } =>{ keycode.map(|key| input.regPress(key)); },
+                Event::KeyUp { keycode, .. } =>{ keycode.map(|key| input.regRelease(key)); },
+                Event::Window { win_event, .. } => {
+                    if let WindowEvent::Resized(width, height) = win_event {
+                        unsafe { gl::Viewport(0, 0, width, height) }
                     }
-                    vbo.set(&verts);
-
-
-                }
-               Event::Quit { .. } => break 'main,
+                },
+                Event::Quit { .. } => break 'main,
                 _ =>()
             }
         }
 
         //OpenGL
+
+        vbo.set(&verts);
+
         let elapsed = start_time.elapsed().as_secs_f32() * 0.5;
         unsafe {
             gl::ClearColor(

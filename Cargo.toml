@@ -6,5 +6,6 @@ edition = "2024"
 [dependencies]
 sdl3 = "0.17.3"
 gl = "0.14.0"
+num-traits = "0.2.19"
 
 
