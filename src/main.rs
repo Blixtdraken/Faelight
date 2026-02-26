@@ -1,8 +1,9 @@
 use std::{f32::consts::PI, time::Instant};
 
-use sdl3::event::{Event,};
+use gl::DrawElements;
+use sdl3::{event::Event, keyboard::Keycode, sys::keycode};
 
-use crate::math::vector2::Vector2;
+use crate::{math::vector2::Vector2, render::render_objects::{Ibo, Vao, Vbo, create_program}};
 
 mod math;
 mod render;
@@ -32,6 +33,28 @@ fn main() {
         }
     );
 
+    let program = create_program().unwrap();
+    program.set();
+
+    let mut verts: Vec<f32> = vec![
+        -0.5, -0.5,
+        0.0, -0.5,
+        0.5, 0.5
+    ];
+
+    let indices: Vec<u32> = vec![
+        0, 1, 2
+    ];
+
+    let vbo = Vbo::generate();
+    vbo.set(&verts);
+
+    let vao = Vao::generate();
+    vao.set();
+
+    let ibo = Ibo::generate();
+    ibo.set(&indices);
+
     unsafe{ 
         gl::ClearColor(0.15, 0.15, 0.16, 1.0);
     }
@@ -43,9 +66,28 @@ fn main() {
     'main: loop{
         
         for event in event_pump.poll_iter() {
-            match handle_window_event(&event) {
-                EventResponse::Quit => break 'main,
-                _ => ()
+            match event {
+                //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
+                Event::KeyDown { timestamp, window_id, keycode, scancode, keymod, repeat, which, raw } =>{
+                    let key= 
+                    match keycode {
+                        Some(key) => key,
+                        None => continue    
+                    };
+                    println!("Key pressed: {key}");
+                    match key {
+                        Keycode::Left => verts[4]  -= 0.01,
+                        Keycode::Right => verts[4] += 0.01,
+                        Keycode::Down => verts[5]  -= 0.01,
+                        Keycode::Up => verts[5]    += 0.01,
+                        _ => continue
+                    }
+                    vbo.set(&verts);
+
+
+                }
+               Event::Quit { .. } => break 'main,
+                _ =>()
             }
         }
 
@@ -58,6 +100,13 @@ fn main() {
                 (((elapsed + 0.666) * PI).sin()+1.0)*0.5,
                 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
+
+            gl::DrawElements(
+                gl::TRIANGLES,
+                indices.len() as i32,
+                gl::UNSIGNED_INT,
+                0 as *const _
+            )
         }
 
         window.gl_swap_window();
@@ -66,15 +115,3 @@ fn main() {
 
 }
 
-enum EventResponse{
-    None,
-    Quit
-}
-
-fn handle_window_event(event: &Event) -> EventResponse{
-     match event {
-                //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
-               Event::Quit { .. } => {EventResponse::Quit}
-                _ =>EventResponse::None
-            }
-}
