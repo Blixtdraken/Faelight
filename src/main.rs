@@ -33,7 +33,7 @@ fn main() {
 
     let window = video_system
         .window("Faelight", window_size.x, window_size.y)
-        .set_flags(WindowFlags::TRANSPARENT)
+        //.set_flags(WindowFlags::TRANSPARENT)
         .resizable()
         .opengl()
         .build()
@@ -126,10 +126,10 @@ fn main() {
         let elapsed = start_time.elapsed().as_secs_f32() * 0.5;
         unsafe {
             gl::ClearColor(
-                0.0,//(((elapsed - 0.000) * PI).sin()+1.0)*0.5,
-                0.0,//(((elapsed - 0.666) * PI).sin()+1.0)*0.5, 
-                0.0,//(((elapsed + 0.666) * PI).sin()+1.0)*0.5,
-                0.0//0.0
+                (((elapsed - 0.000) * PI).sin()+1.0)*0.5,
+                (((elapsed - 0.666) * PI).sin()+1.0)*0.5, 
+                (((elapsed + 0.666) * PI).sin()+1.0)*0.5,
+                1.0
                 );
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
