@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::HashSet};
 
 use sdl3::keyboard::Keycode;
 
-use crate::math::vector2::Vector2f;
+use crate::{math::vector2::Vector2f, thread_cell};
 
 #[derive(Default)]
 struct KeyboardState{
@@ -48,21 +48,20 @@ impl KeyboardState{
 }
 
 
-thread_local! {
-    pub static KEYBOARD: RefCell<KeyboardState> = RefCell::new(KeyboardState::new());
-}
+
+thread_cell!(KEYBOARD, KeyboardState);
 
 pub struct InputReader{}
 
 impl InputReader{
     pub fn is_held(key: Keycode)->bool{
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_held(key))
+        KEYBOARD.borrow().is_held(key)
     }
     pub fn is_just_pressed(key: Keycode)->bool{
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_just_pressed(key))
+        KEYBOARD.borrow().is_just_pressed(key)
     }
     pub fn is_just_released(key: Keycode)->bool{
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_just_released(key))
+        KEYBOARD.borrow().is_just_released(key)
     }
     //pub fn keys_to_vector(right: Keycode, left: Keycode, up:Keycode, down: Keycode)->Vector2f{
     //   Vector2f::new(x, y)
@@ -74,13 +73,13 @@ pub struct InputDispatcher{}
 
 impl InputDispatcher{
     pub fn reg_press(key: Keycode){
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().reg_press(key))
+        KEYBOARD.borrow_mut().reg_press(key)
     }
     pub fn reg_release(key: Keycode){
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().reg_release(key))
+        KEYBOARD.borrow_mut().reg_release(key)
     }
     pub fn frame_clear(){
-        KEYBOARD.with(|keyboard| keyboard.borrow_mut().frame_clear())
+       KEYBOARD.borrow_mut().frame_clear()
     }
 }
 

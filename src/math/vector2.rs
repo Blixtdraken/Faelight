@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::ops::{Div, Mul};
 
 use num_traits::{Float, Num, PrimInt, Unsigned};
@@ -27,7 +28,7 @@ impl<T: Num + Copy> Vector2<T>{
 }
 
 impl<T: Float + Copy> Vector2<T> {
-
+    
     pub fn normalize(&mut self){
         let length = self.len();
         let fraction = T::one()/length;

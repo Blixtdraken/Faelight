@@ -39,7 +39,7 @@ impl Shader {
         return buffer.to_string_lossy().into_owned();
     }
 
-    pub fn id(&self)->GLuint { self.id }
+    //pub fn id(&self)->GLuint { self.id }
 }
 
 impl Drop for Shader {
