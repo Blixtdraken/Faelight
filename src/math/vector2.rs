@@ -38,7 +38,7 @@ impl<T: Float + Copy> Vector2<T> {
     }
 
     pub fn len(&self)-> T{
-        (self.x*self.x + self.y*self.y).sqrt()
+        (self.x*self.x + self.y*self.y).sqrt()  
     }
 
 }
@@ -52,7 +52,6 @@ impl<T: PrimInt + Copy> Vector2<T> {
 
 impl<T: Unsigned + Copy> Vector2<T> {
 
-    //Do integer stuff :P
     pub fn width(&self)->T {
         self.x
     }

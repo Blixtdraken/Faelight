@@ -1,8 +1,9 @@
-use std::collections::HashSet;
+use std::{cell::RefCell, collections::HashSet};
 
 use sdl3::keyboard::Keycode;
 
-pub struct KeyboardState{
+#[derive(Default)]
+struct KeyboardState{
     is_held:       HashSet<Keycode>,
     just_pressed:  HashSet<Keycode>,
     just_released: HashSet<Keycode>
@@ -14,30 +15,72 @@ impl KeyboardState{
         Self { is_held: HashSet::with_capacity(32), just_pressed: HashSet::with_capacity(8), just_released: HashSet::with_capacity(8) }
     }
 
-    pub fn regPress(&mut self, key: Keycode){
+    pub fn reg_press(&mut self, key: Keycode){
        self.just_pressed.insert(key);
        self.is_held.insert(key);
     }
 
-    pub fn regRelease(&mut self, key: Keycode){
+    pub fn reg_release(&mut self, key: Keycode){
         self.just_released.insert(key);
         self.is_held.remove(&key);
     }
 
-    pub fn frameClear(&mut self){
+    pub fn frame_clear(&mut self){
         self.just_pressed.clear();
         self.just_released.clear();
     }
 
-    pub fn isHeld(&self, key: Keycode)->bool{
+    pub fn is_held(&self, key: Keycode)->bool{
         self.is_held.contains(&key)
     }
 
-    pub fn isJustPressed(&self, key: Keycode)->bool{
+    pub fn is_just_pressed(&self, key: Keycode)->bool{
         self.just_pressed.contains(&key)
     }
-    pub fn isJustReleased(&self, key: Keycode)->bool{
+    pub fn is_just_released(&self, key: Keycode)->bool{
        self.just_released.contains(&key)
     }
 
+   // pub fn keysToVector2(&self, right: Keycode, left: Keycode)->Vector2f{
+   //     
+   // }
+
 }
+
+
+thread_local! {
+    pub static KEYBOARD: RefCell<KeyboardState> = RefCell::new(KeyboardState::new());
+}
+
+pub struct InputReader{}
+
+impl InputReader{
+    pub fn is_held(key: Keycode)->bool{
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_held(key))
+    }
+    pub fn is_just_pressed(key: Keycode)->bool{
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_just_pressed(key))
+    }
+    pub fn is_just_released(key: Keycode)->bool{
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_just_released(key))
+    }
+}
+
+pub struct InputDispatcher{}
+
+impl InputDispatcher{
+    pub fn reg_press(key: Keycode){
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().reg_press(key))
+    }
+    pub fn reg_release(key: Keycode){
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().reg_release(key))
+    }
+    pub fn frame_clear(){
+        KEYBOARD.with(|keyboard| keyboard.borrow_mut().frame_clear())
+    }
+}
+
+
+
+
+

@@ -1,9 +1,10 @@
-use std::{f32::consts::PI, time::Instant};
+use core::alloc;
+use std::{alloc::Layout, f32::consts::PI, time::Instant};
 
 use gl::DrawElements;
 use sdl3::{event::{Event, WindowEvent}, keyboard::Keycode, sys::keycode};
 
-use crate::{input::keyboard::KeyboardState, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
+use crate::{input::{keyboard::{InputDispatcher, InputReader}}, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
 
 mod math;
 mod render;
@@ -13,6 +14,10 @@ mod input;
 fn main() {
     println!("Hello, can I have your name?");
 
+    let thing = Box::<Vector2f>::new(Vector2f::new(1.0, 1.0));
+
+    drop(thing);
+    
     let sdl = sdl3::init().unwrap();
 
     let video_system = sdl.video().unwrap();
@@ -75,18 +80,17 @@ fn main() {
 
     let mut start_time = Instant::now();
 
-    let mut input = KeyboardState::new();
+    let mut velocity: Vector2f = Vector2f::new(0.0, 0.0);
 
 
     'main: loop{
         let delta_time = delta_timer.elapsed().as_secs_f32();
-        println!("Deltatime: {delta_time}");
         delta_timer = Instant::now();
         for event in event_pump.poll_iter() {
             match event {
                 //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
-                Event::KeyDown { keycode, .. } =>{ keycode.map(|key| input.regPress(key)); },
-                Event::KeyUp { keycode, .. } =>{ keycode.map(|key| input.regRelease(key)); },
+                Event::KeyDown { keycode, repeat: false, .. } =>{ keycode.map(|key| InputDispatcher::reg_press(key)); },
+                Event::KeyUp   { keycode, repeat: false, .. } =>{ keycode.map(|key| InputDispatcher::reg_release(key)); },
                 Event::Window { win_event, .. } => {
                     if let WindowEvent::Resized(width, height) = win_event {
                         unsafe { gl::Viewport(0, 0, width, height) }
@@ -97,6 +101,14 @@ fn main() {
             }
         }
 
+        //Input Test
+
+        if InputReader::is_held(Keycode::Right) {for vert in &mut verts {vert.x += 1.0*delta_time}}
+        if InputReader::is_held(Keycode::Left)  {for vert in &mut verts {vert.x -= 1.0*delta_time}}
+        if InputReader::is_held(Keycode::Up)    {for vert in &mut verts {vert.y += 1.0*delta_time}}
+        if InputReader::is_held(Keycode::Down)  {for vert in &mut verts {vert.y -= 1.0*delta_time}}
+
+        InputDispatcher::frame_clear();
         //OpenGL
 
         vbo.set(&verts);
