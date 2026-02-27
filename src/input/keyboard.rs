@@ -2,6 +2,8 @@ use std::{cell::RefCell, collections::HashSet};
 
 use sdl3::keyboard::Keycode;
 
+use crate::math::vector2::Vector2f;
+
 #[derive(Default)]
 struct KeyboardState{
     is_held:       HashSet<Keycode>,
@@ -41,9 +43,7 @@ impl KeyboardState{
        self.just_released.contains(&key)
     }
 
-   // pub fn keysToVector2(&self, right: Keycode, left: Keycode)->Vector2f{
-   //     
-   // }
+   
 
 }
 
@@ -64,6 +64,10 @@ impl InputReader{
     pub fn is_just_released(key: Keycode)->bool{
         KEYBOARD.with(|keyboard| keyboard.borrow_mut().is_just_released(key))
     }
+    //pub fn keys_to_vector(right: Keycode, left: Keycode, up:Keycode, down: Keycode)->Vector2f{
+    //   Vector2f::new(x, y)
+    //   if(is_held(right))
+    //}
 }
 
 pub struct InputDispatcher{}
@@ -79,6 +83,7 @@ impl InputDispatcher{
         KEYBOARD.with(|keyboard| keyboard.borrow_mut().frame_clear())
     }
 }
+
 
 
 

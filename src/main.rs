@@ -1,22 +1,29 @@
-use core::alloc;
-use std::{alloc::Layout, f32::consts::PI, time::Instant};
+
+use std::{alloc::Layout, f32::consts::PI, ops::Add, time::Instant};
 
 use gl::DrawElements;
-use sdl3::{event::{Event, WindowEvent}, keyboard::Keycode, sys::keycode};
+use sdl3::{event::{Event, WindowEvent}, keyboard::Keycode, sys::{keycode, video::SDL_WINDOW_TRANSPARENT}, video::WindowFlags};
 
-use crate::{input::{keyboard::{InputDispatcher, InputReader}}, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
+use crate::{core::thread_cell, input::keyboard::{InputDispatcher, InputReader}, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
 
 mod math;
 mod render;
 mod input;
+mod core;
 
 
+thread_cell!(THING, f32);
 fn main() {
     println!("Hello, can I have your name?");
-
-    let thing = Box::<Vector2f>::new(Vector2f::new(1.0, 1.0));
-
-    drop(thing);
+    {
+        let mut value = &mut *THING.take();
+       
+        *value = value.add(3.0);
+        println!("Thing 1: {}", value);
+    }
+    let instance = &*THING.take();
+    println!("Thing 2: {}", instance);
+    
     
     let sdl = sdl3::init().unwrap();
 
@@ -26,10 +33,13 @@ fn main() {
 
     let window = video_system
         .window("Faelight", window_size.x, window_size.y)
+        .set_flags(WindowFlags::TRANSPARENT)
         .resizable()
         .opengl()
         .build()
         .unwrap();
+
+
 
     let _gl_context = window.gl_create_context().unwrap();
     let _gl = gl::load_with(|s| 
@@ -71,7 +81,7 @@ fn main() {
     ibo.set(&indices);
 
     unsafe{ 
-        gl::ClearColor(0.15, 0.15, 0.16, 1.0);
+        gl::ClearColor(0.15, 0.15, 0.16, 0.0);
     }
 
     let mut event_pump = sdl.event_pump().unwrap();
@@ -116,10 +126,11 @@ fn main() {
         let elapsed = start_time.elapsed().as_secs_f32() * 0.5;
         unsafe {
             gl::ClearColor(
-                (((elapsed - 0.000) * PI).sin()+1.0)*0.5, 
-                (((elapsed - 0.666) * PI).sin()+1.0)*0.5, 
-                (((elapsed + 0.666) * PI).sin()+1.0)*0.5,
-                1.0);
+                0.0,//(((elapsed - 0.000) * PI).sin()+1.0)*0.5,
+                0.0,//(((elapsed - 0.666) * PI).sin()+1.0)*0.5, 
+                0.0,//(((elapsed + 0.666) * PI).sin()+1.0)*0.5,
+                0.0//0.0
+                );
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
             gl::DrawElements(

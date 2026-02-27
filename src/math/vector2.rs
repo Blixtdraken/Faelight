@@ -1,8 +1,8 @@
 use std::ops::{Div, Mul};
 
-use num_traits::{Float, PrimInt, Unsigned};
+use num_traits::{Float, Num, PrimInt, Unsigned};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Vector2<T>{
     pub x: T,
     pub y: T
@@ -17,9 +17,12 @@ pub type Vector2i64 = Vector2<i64>;
 pub type Vector2u64 = Vector2<u64>;
 
 
-impl<T> Vector2<T>{
+impl<T: Num + Copy> Vector2<T>{
     pub fn new(x: T, y: T)->Self{
         Self { x, y }
+    }
+    pub fn zero()->Self{
+        Self { x: T::zero(), y: T::zero() }
     }
 }
 
