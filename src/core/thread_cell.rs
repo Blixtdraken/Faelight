@@ -46,19 +46,19 @@ impl<T: Default + 'static> ThreadCell<T> {
 
 
 
-impl<T: Default + 'static>  Deref for ThreadCell<T>{
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        self.source.with(|cell| 
-                unsafe { & *cell.get()}
-            )
-    }
-}
-impl<T: Default + 'static>  DerefMut for ThreadCell<T>{
-    fn deref_mut(&mut self) -> &mut T {
-         self.source.with(|cell| 
-                unsafe { &mut *cell.get()}
-            )
-    }
-}
+//impl<T: Default + 'static>  Deref for ThreadCell<T>{
+//    type Target = T;
+//
+//    fn deref(&self) -> &Self::Target {
+//        self.source.with(|cell| 
+//                unsafe { & *cell.get()}
+//            )
+//    }
+//}
+//impl<T: Default + 'static>  DerefMut for ThreadCell<T>{
+//    fn deref_mut(&mut self) -> &mut T {
+//         self.source.with(|cell| 
+//                unsafe { &mut *cell.get()}
+//            )
+//    }
+//}

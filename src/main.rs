@@ -16,12 +16,12 @@ thread_cell!(THING, f32);
 fn main() {
     println!("Hello, can I have your name?");
     {
-        let mut value = THING.borrow_mut();
+        *THING.borrow_mut() += 3.0;
        
-        *value += 4.0;
-        println!("Thing 1: {}", value);
+        
+        println!("Thing 1: {}", THING.borrow());
     }
-    let instance: &f32 = &*THING;
+    let instance: &f32 = THING.borrow();
     println!("Thing 2: {}", instance);
     
     
