@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::ops::{Div, Mul};
+use std::ops::{Add, Div, Mul, Sub};
 
 use num_traits::{Float, Num, PrimInt, Unsigned};
 
@@ -67,7 +67,7 @@ impl<T: Unsigned + Copy> Vector2<T> {
 }
 
 
-impl<T: Div<Output = T> + Copy> Div<T> for Vector2<T>{
+impl<T: Div<Output = T> + Copy + Num> Div<T> for Vector2<T>{
 
     type Output = Self;
     fn div(self, rhs: T) -> Self::Output {
@@ -79,7 +79,7 @@ impl<T: Div<Output = T> + Copy> Div<T> for Vector2<T>{
     
 }
 
-impl<T: Mul<Output = T> + Copy> Mul<T> for Vector2<T>{
+impl<T: Mul<Output = T> + Copy + Num> Mul<T> for Vector2<T>{
 
     type Output = Self;
     fn mul(self, rhs: T) -> Self::Output {
@@ -90,6 +90,36 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Vector2<T>{
     }
     
 }
+
+impl<T: Add<Output = T> + Copy + Num> Add<Vector2<T>> for Vector2<T>{
+
+    type Output = Self;
+    
+    fn add(self, rhs: Vector2<T>) -> Self::Output {
+        let x = self.x + rhs.x;
+        let y = self.y + rhs.y;
+        Self {x, y}
+        
+    }
+
+    
+}
+
+impl<T: Add<Output = T> + Copy + Num> Sub<Vector2<T>> for Vector2<T>{
+
+    type Output = Self;
+    
+    fn sub(self, rhs: Vector2<T>) -> Self::Output {
+        let x = self.x - rhs.x;
+        let y = self.y - rhs.y;
+        Self {x, y}
+        
+    }
+
+    
+}
+
+
 
 
 

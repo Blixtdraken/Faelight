@@ -1,23 +1,21 @@
-use std::{borrow::{Borrow, BorrowMut}, cell::{Cell, UnsafeCell}, mem::{self, transmute}, ops::{Deref, DerefMut}, thread::LocalKey};
+use std::{cell::UnsafeCell, thread::LocalKey};
 
 
 #[macro_export]
 macro_rules!  thread_cell {
-    ($name: ident, $t: ty) => {
+    ($vis:vis $name: ident, $t: ty) => {
         thread_local!{
             static _INNER: std::cell::UnsafeCell<$t> = std::cell::UnsafeCell::new(<$t>::default());
         }
-        pub static $name: crate::core::thread_cell::ThreadCell<$t> = 
+        $vis static $name: crate::core::thread_cell::ThreadCell<$t> = 
         crate::core::thread_cell::ThreadCell::<$t>::new(&_INNER);
     };
 }
-
 
 pub struct ThreadCell<T: Default + 'static>{
     pub (in crate::core::thread_cell)
     source: &'static LocalKey<UnsafeCell<T>>
 }
-
 
 impl<T: Default + 'static> ThreadCell<T> {
 

@@ -90,7 +90,7 @@ fn main() {
 
     let mut start_time = Instant::now();
 
-    let mut velocity: Vector2f = Vector2f::new(0.0, 0.0);
+    let mut velocity: Vector2f = Vector2f::new(1.6, 0.9)*100.0;
 
 
     'main: loop{
@@ -111,14 +111,25 @@ fn main() {
             }
         }
 
-        //Input Test
+        //Logic fun test
 
-        if InputReader::is_held(Keycode::Right) {for vert in &mut verts {vert.x += 1.0*delta_time}}
-        if InputReader::is_held(Keycode::Left)  {for vert in &mut verts {vert.x -= 1.0*delta_time}}
-        if InputReader::is_held(Keycode::Up)    {for vert in &mut verts {vert.y += 1.0*delta_time}}
-        if InputReader::is_held(Keycode::Down)  {for vert in &mut verts {vert.y -= 1.0*delta_time}}
+        let mut offset = Vector2f::zero();
+         for vert in &mut verts {
+            match vert {
+                vert if vert.x >  1.0 => { velocity.x *= -1.0; offset.x = vert.x -  1.0},
+                vert if vert.x < -1.0 => { velocity.x *= -1.0; offset.x = vert.x - -1.0},
+                vert if vert.y >  1.0 => { velocity.y *= -1.0; offset.y = vert.y -  1.0},
+                vert if vert.y < -1.0 => { velocity.y *= -1.0; offset.y = vert.y - -1.0},
+                _ => continue
+            }
+            break;
+        }
 
-        InputDispatcher::frame_clear();
+        for vert in &mut verts {
+            *vert = *vert + velocity*delta_time - offset; 
+        }
+
+
         //OpenGL
 
         vbo.set(&verts);
