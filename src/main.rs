@@ -111,24 +111,10 @@ fn main() {
             }
         }
 
-        //Logic fun test
-
-        let mut offset = Vector2f::zero();
-         for vert in &mut verts {
-            match vert {
-                vert if vert.x >  1.0 => { velocity.x *= -1.0; offset.x = vert.x -  1.0},
-                vert if vert.x < -1.0 => { velocity.x *= -1.0; offset.x = vert.x - -1.0},
-                vert if vert.y >  1.0 => { velocity.y *= -1.0; offset.y = vert.y -  1.0},
-                vert if vert.y < -1.0 => { velocity.y *= -1.0; offset.y = vert.y - -1.0},
-                _ => continue
-            }
-            break;
-        }
-
-        for vert in &mut verts {
-            *vert = *vert + velocity*delta_time - offset; 
-        }
-
+        let thing = f32::abs(4.4);
+        let num: f32 = 4.3;
+        let test = num.abs();
+        let test2 = num.ceil();
 
         //OpenGL
 

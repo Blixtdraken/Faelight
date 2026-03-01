@@ -12,8 +12,7 @@ macro_rules!  thread_cell {
     };
 }
 
-pub struct ThreadCell<T: Default + 'static>{
-    pub (in crate::core::thread_cell)
+pub struct ThreadCell<T: Default + 'static>{ 
     source: &'static LocalKey<UnsafeCell<T>>
 }
 
@@ -26,7 +25,7 @@ impl<T: Default + 'static> ThreadCell<T> {
 
     pub fn borrow(&'static self)->&'static T{
         self.source.with(|cell| 
-                unsafe { & *cell.get()}
+                unsafe { &*cell.get()}
             )
     }
 
@@ -34,29 +33,8 @@ impl<T: Default + 'static> ThreadCell<T> {
             self.source.with(|cell| 
                 unsafe { &mut *cell.get()}
             )
+            
         
     }
 
 }
-
-
-
-
-
-
-//impl<T: Default + 'static>  Deref for ThreadCell<T>{
-//    type Target = T;
-//
-//    fn deref(&self) -> &Self::Target {
-//        self.source.with(|cell| 
-//                unsafe { & *cell.get()}
-//            )
-//    }
-//}
-//impl<T: Default + 'static>  DerefMut for ThreadCell<T>{
-//    fn deref_mut(&mut self) -> &mut T {
-//         self.source.with(|cell| 
-//                unsafe { &mut *cell.get()}
-//            )
-//    }
-//}
