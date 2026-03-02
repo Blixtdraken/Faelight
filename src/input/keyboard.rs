@@ -51,9 +51,9 @@ impl KeyboardState{
 
 thread_cell!(KEYBOARD, KeyboardState);
 
-pub struct InputReader{}
+pub struct KBInputReader;
 
-impl InputReader{
+impl KBInputReader{
     pub fn is_held(key: Keycode)->bool{
         KEYBOARD.borrow().is_held(key)
     }
@@ -69,9 +69,9 @@ impl InputReader{
     //}
 }
 
-pub struct InputDispatcher{}
+pub struct KBInputDispatcher;
 
-impl InputDispatcher{
+impl KBInputDispatcher{
     pub fn reg_press(key: Keycode){
         KEYBOARD.borrow_mut().reg_press(key)
     }

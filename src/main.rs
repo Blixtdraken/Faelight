@@ -1,10 +1,9 @@
 
-use std::{alloc::Layout, f32::consts::PI, ops::Add, time::Instant};
+use std::{f32::consts::PI, time::Instant};
 
-use gl::DrawElements;
-use sdl3::{event::{Event, WindowEvent}, keyboard::Keycode, sys::{keycode, video::SDL_WINDOW_TRANSPARENT}, video::WindowFlags};
+use sdl3::event::{Event, WindowEvent};
 
-use crate::{core::thread_cell, input::keyboard::{InputDispatcher, InputReader}, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
+use crate::{core::thread_cell, input::keyboard::{KBInputDispatcher}, math::vector2::{Vector2f, Vector2u}, render::render_objects::{Ibo, Vao, Vbo, create_program}};
 
 mod math;
 mod render;
@@ -99,22 +98,20 @@ fn main() {
         for event in event_pump.poll_iter() {
             match event {
                 //WindowEvent::CursorPos(x, y) => {println!("x: {x} y: {y}")}
-                Event::KeyDown { keycode, repeat: false, .. } =>{ keycode.map(|key| InputDispatcher::reg_press(key)); },
-                Event::KeyUp   { keycode, repeat: false, .. } =>{ keycode.map(|key| InputDispatcher::reg_release(key)); },
+                Event::KeyDown { keycode, repeat: false, .. } =>{ keycode.map(|key| KBInputDispatcher::reg_press(key)); },
+                Event::KeyUp   { keycode, repeat: false, .. } =>{ keycode.map(|key| KBInputDispatcher::reg_release(key)); },
                 Event::Window { win_event, .. } => {
                     if let WindowEvent::Resized(width, height) = win_event {
                         unsafe { gl::Viewport(0, 0, width, height) }
-                    }
+                    } 
                 },
                 Event::Quit { .. } => break 'main,
                 _ =>()
             }
         }
 
-        let thing = f32::abs(4.4);
-        let num: f32 = 4.3;
-        let test = num.abs();
-        let test2 = num.ceil();
+        //Input
+        KBInputDispatcher::frame_clear();
 
         //OpenGL
 
